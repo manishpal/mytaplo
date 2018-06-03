@@ -418,7 +418,7 @@ px      68    160    252    344    436    528    620    712    */
 	}
 	
 	header .headerBottomArea{
-		padding: 20px 0
+	#	padding: 20px 0
 	}
         .logo-custom { max-width : 80%;}
 	nav#navbar{
