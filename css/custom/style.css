@@ -1991,8 +1991,10 @@ footer {
 .copyrightTxt {
 	color: #9fa3a8;
 	line-height: 24px;
-	padding: 30px 20px 40px;
-	font-size: 14px
+	padding-top: 20px;
+	margin-left: 10px;
+	margin-top: 30px;
+	font-size: 13px
 }
 
 .copyrightTxt p {
@@ -4122,6 +4124,10 @@ header .topInfo li.clientAreaLi span:hover,
 .logo-custom {
   margin-top:-20px;
   height : auto !important;
+}
+
+.footerInfo {
+  padding-bottom: 20px;
 }
 
 

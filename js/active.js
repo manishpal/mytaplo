@@ -210,6 +210,13 @@
 		$('.preloader').fadeOut('slow', function(){
 			$(this).remove();
 		});
+		var $root = $('html, body');
+		$('a.header-link').click(function(){
+			$root.animate({
+                		scrollTop: $($.attr(this, 'href')).offset().top
+            		}, 500);
+			return false;
+		});
 	});
 	
 })(jQuery);
