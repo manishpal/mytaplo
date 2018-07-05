@@ -140,6 +140,7 @@ px      68    160    252    344    436    528    620    712    */
 		position: relative;
 		z-index: 1
 	}
+        .logo-custom { max-width : 80%;}
 	.homeContent:before{
 		position: absolute;
 		content: '';
@@ -409,10 +410,17 @@ px      68    160    252    344    436    528    620    712    */
 		width: 320px;
 		position: relative
 	}
+	.contactSubmit {
+  		width: 100% !important;
+	}
+	.contactMsg {
+	    width: 100% !important;
+	}
 	
 	header .headerBottomArea{
-		padding: 20px 0
+	#	padding: 20px 0
 	}
+        .logo-custom { max-width : 80%;}
 	nav#navbar{
 		top: 58px
 	}
@@ -1104,6 +1112,9 @@ px      68    160    252    344    436    528    620    712    */
 }
 .eSearchImg {
     display: none;
+}
+.contactSubmit {
+  width: 100%;
 }
 .errorContent > a {
     display: block;

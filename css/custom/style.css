@@ -818,7 +818,7 @@ header nav#navbar ul > li.dropdown-megamenu:hover::before {
 	}
 	.navbar-header {
 		position: absolute;
-		right: 75px;
+		right: 25px;
 		top: 0;
 		z-index: 9
 	}
@@ -1628,7 +1628,9 @@ form.domainForm {
 >>> | Service Area Css |
 *****************************************
 */
-
+.center {
+  text-align : center;
+}
 .singleService {
 	text-align: center;
 	line-height: 28px;
@@ -1989,10 +1991,12 @@ footer {
 }
 
 .copyrightTxt {
+	text-align: center;
 	color: #9fa3a8;
 	line-height: 24px;
-	padding: 30px 20px 40px;
-	font-size: 14px
+	padding-top: 20px;
+	margin-left: 10px;
+	font-size: 13px
 }
 
 .copyrightTxt p {
@@ -2801,7 +2805,7 @@ ul.regDomains .domainName a:hover {
 
 .contactForm .contactMsg {
 	height: 150px;
-	width: 97%;
+	width : 97%;
 }
 
 .contactForm .contactMsg textarea {
@@ -4122,6 +4126,13 @@ header .topInfo li.clientAreaLi span:hover,
 .logo-custom {
   margin-top:-20px;
   height : auto !important;
+}
+
+.footerInfo {
+  padding-bottom: 20px;
+}
+.contact-form {
+  padding-bottom : 20px;
 }
 
 
