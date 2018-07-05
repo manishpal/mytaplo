@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const apiV1 = require('./apiV1/index');
-const views = require('./views/index');
+//const apiV1 = require('./apiV1/index');
+const dashboard = require('./dashboard/index');
 
-router.use('/api/v1',apiV1),
+//router.use('/api/v1',apiV1),
 
-router.use('/view',views);
+router.use('/dashboard',dashboard);
 
 module.exports = router;

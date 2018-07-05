@@ -14,8 +14,8 @@ const app = express();
 const hbs = require('hbs');
 
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'html'); // Handlebars Engine
-app.engine('html', hbs.__express);
+app.set('view engine', 'hbs'); // Handlebars Engine
+//app.engine('html', hbs.__express);
 
 app.use(express.static(path.join(__dirname, 'public/')));
 
@@ -42,5 +42,7 @@ app.use(errorController.notFound);
 if(app.get('dev') === 'development'){
     app.use(console.errorController.developmentErrors);
 }
+
+require('./lib/initializers');
 
 module.exports = app;

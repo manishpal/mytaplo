@@ -12,6 +12,7 @@ mongoose.connection.on('error',(err) => {
 require('./models/Profile');
 require('./models/Page');
 require('./models/Blog');
+require('./lib/initializers');
 
 const app = require('./app');
 
