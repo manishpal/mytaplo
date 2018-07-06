@@ -1,1 +1,98 @@
-We are here
+<div class="container secPdng animated">
+	<div class="col-sm-12">
+	<span class="h3">Transactions</span>
+
+	<ul class="cartTable">
+    					<li class="cartHead clearfix">
+    						<div class="col-sm-2">currency</div>
+    						<div class="col-sm-2">amount</div>
+    						<div class="col-sm-2">Recieving/Paying</div>
+    						<div class="col-sm-2">Date</div>
+    						<div class="col-sm-2">Hedge Price</div>
+    						<div class="col-sm-2">Action</div>
+    					</li>
+    					<li class="singleIteam clearfix category-host"> 
+    						<div class="col-sm-2">
+    							USD
+    						</div>
+    						<div class="col-sm-2">
+    							40 $
+    						</div>
+
+    						<div class="col-sm-2">
+    							Recieving
+    						</div>
+    						<div class="col-sm-2">
+    							24-07-2017
+    						</div>
+
+    						<div class="col-sm-2">
+    							Hedged
+    						</div>
+
+    						<div class="col-sm-2">
+    							<a href="#">Remove</a>
+    						</div>
+    					</li>
+    					
+    					<li class="coupon clearfix">
+    						<form action="#" class="couponForm">
+    							<div class="col-sm-2 dropdowncell">
+	    							<div class="duration">
+		    							<span>USD</span>
+		    							<ul class="cartOpt">
+		    								<li data-code="USD" data-price="$10">USD</li>
+		    								<li data-code="GBP" data-price="$15">GBP</li>
+		    								<li data-code="EURO" data-price="$30">EURO</li>
+		    							</ul>
+	    							</div>
+    							</div>
+    							<div class="col-sm-3">
+    								<input type="text" placeholder="Amount">
+    							</div>
+    							<div class="col-sm-2 dropdowncell">
+	    							<div class="duration">
+		    							<span>Select</span>
+		    							<ul class="cartOpt">
+		    								<li data-code="Recieving" data-price="$10">Recieving</li>
+		    								<li data-code="Paying" data-price="$15">Paying</li>
+		    							</ul>
+	    							</div>
+    							</div>
+    							
+    							<div class="col-sm-3">
+    								<input type="text" placeholder="Date" class="datepicker" />
+    							</div>
+
+    							<div class="col-sm-2">
+    								<button id="add_transaction" type="submit">Add transaction</button>
+    							</div>
+    						</form>
+    					</li>
+    				</ul>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+
+		$('#add_transaction').click(function(){
+			$.ajax({
+				url : '/transactions/add',
+				type : 'POST',
+				dataType : 'json',
+				contentType: "application/json",
+	            data: JSON.stringify({
+	                currency: 'USD',
+	                kidName: kidName,
+	                kidGender: kidGender,
+	                kidProfilePic: kidProfilePic
+	            })
+			}).done(function(resp){
+				console.log("got response", resp);
+			});
+		});
+		
+	});
+</script>

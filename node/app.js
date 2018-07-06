@@ -15,6 +15,7 @@ const hbs = require('hbs');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs'); // Handlebars Engine
+
 //app.engine('html', hbs.__express);
 
 app.use(express.static(path.join(__dirname, 'public/')));

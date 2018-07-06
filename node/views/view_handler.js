@@ -187,7 +187,7 @@ ViewHandler.renderViewWithParams = function( requestParams, res, options ){
         delete options.view;
 
         res.render( view, requestParams, function( err, html ){
-            console.log("Got err", html);
+            //console.log("Got err", html);
             res.send(html);
         });
     
