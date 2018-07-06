@@ -31,7 +31,7 @@
     						</div>
 
     						<div class="col-sm-2">
-    							<a href="#">Remove</a>
+    							<a href="#" class="remove_transaction"  data-id="">Remove</a>
     						</div>
     					</li>
     					
@@ -75,24 +75,89 @@
 
 
 <script type="text/javascript">
-	$(document).ready(function(){
+        function addTransactionRemoveListener() {
+            $('.remove_transaction').click(function(){
+                $.ajax({
+                    url : '/transactions/remove',
+                    type : 'POST',
+                    dataType : 'json',
+                    contentType : 'application/json',
+                    data : JSON.stringify({
+                        id : $(this).attr("data-id")
+                    })
+                }).done(function(resp){
+                    console.log("got response", resp);
+                });
 
-		$('#add_transaction').click(function(){
-			$.ajax({
-				url : '/transactions/add',
-				type : 'POST',
-				dataType : 'json',
-				contentType: "application/json",
-	            data: JSON.stringify({
-	                currency: 'USD',
-	                kidName: kidName,
-	                kidGender: kidGender,
-	                kidProfilePic: kidProfilePic
-	            })
-			}).done(function(resp){
-				console.log("got response", resp);
-			});
-		});
-		
-	});
+                return false;
+            });
+        };
+
+
+        function addTransactionRow(data) {
+            var templatString = `<li class="singleIteam clearfix category-host"> 
+                            <div class="col-sm-2">
+                                DATA_CURRENCY
+                            </div>
+                            <div class="col-sm-2">
+                                DATA_AMOUNT
+                            </div>
+
+                            <div class="col-sm-2">
+                                DATA_CREDIT
+                            </div>
+                            <div class="col-sm-2">
+                                DATA_DATE
+                            </div>
+
+                            <div class="col-sm-2">
+                                DATA_HEDGED
+                            </div>
+
+                            <div class="col-sm-2">
+                                <a href="#" class="remove_transaction"  data-id="DATA_ID">Remove</a>
+                            </div>
+                        </li>
+
+            `;
+
+            templateString = templateString.replace("DATA_CURRENCY", data.currency);
+            templateString = templateString.replace("DATA_AMOUNT", data.amount);
+            templateString = templateString.replace("DATA_CREDIT", data.credit? 'Recieving' : 'Paying');
+            templateString = templateString.replace("DATA_DATE", data.transactionDate);
+            templateString = templateString.replace("DATA_HEDGED", data.hedged);
+            templateString = templateString.replace("DATA_ID", data.id);
+            $(templateString).insertBefore('.coupon');
+
+
+
+        }
+  
+        $(document).ready(function(){
+            
+            addTransactionRemoveListener();
+
+            $('#add_transaction').click(function(){
+                $.ajax({
+                    url : '/transactions/add',
+                    type : 'POST',
+                    dataType : 'json',
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        currency: 'USD',
+                        amount : 40000,
+                        credit : true,
+                        transactionDate : '20-04-2017'
+                    })
+                }).done(function(resp){
+                    console.log("got response", resp);
+                    if(resp.status === "Success"){
+                        addTransactionRow(resp.results.data);
+                    }
+                });
+                return false;
+            });
+        
+        });
+	
 </script>

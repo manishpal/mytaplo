@@ -26,7 +26,8 @@ const transactionSchema = new Schema({
         type : String
     },
     deleted : {
-        type: Boolean
+        type: Boolean,
+        default: false
     }
 }, {
     toJSON : {virtuals : true},
