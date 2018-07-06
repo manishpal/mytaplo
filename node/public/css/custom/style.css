@@ -4147,6 +4147,13 @@ header .topInfo li.clientAreaLi span:hover,
 }
 
 
+.login-form {
+	margin:0px auto;
+	display: block;
+	width: 40%;
+}
+
+
 /*button transition effect*/
 
 header .topInfo li.clientAreaLi span,

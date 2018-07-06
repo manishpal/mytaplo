@@ -3,15 +3,18 @@ const Schema = mongoose.Schema;
 const timestamps = require('mongoose-timestamp');
 const validator = require('validator');
 const constants = require('../Constants');
-var SchemaTypes = mongoose.Schema.Types;
 
 
 const transactionSchema = new Schema({
+    user : {
+        type : Schema.Types.ObjectId,
+        ref : 'User'
+    },
     currency : {
         type : String
     },
     amount : {
-        type : SchemaTypes.Double
+        type : Number
     },
     credit : {
         type : Boolean

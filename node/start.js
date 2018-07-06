@@ -9,9 +9,8 @@ mongoose.connection.on('error',(err) => {
 });
 
 // Importing all the models
-require('./models/Profile');
-require('./models/Page');
-require('./models/Blog');
+require('./models/User');
+require('./models/Transaction');
 require('./lib/initializers');
 
 const app = require('./app');
