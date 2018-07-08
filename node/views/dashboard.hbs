@@ -1,5 +1,42 @@
+<button class="hide" id="key-data">token {{apiKey}}:{{tickerToken}}</button>
 <div class="container secPdng animated">
-	<div class="col-sm-12">
+    <div class="col-sm-6">
+        <span class="h3">Portfolio Summary </span>
+        <ul class="cartTable">
+            <li class="cartHead clearfix">
+                <div class="col-sm-3">Instrument</div>
+                <div class="col-sm-3">Price</div>
+                <div class="col-sm-3">Live Price</div>
+                <div class="col-sm-3">Profit/Loss</div>                
+            </li>
+            <li class="singleIteam clearfix">
+                <div class="col-sm-12 center">
+                    No hedge placed yet.
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="col-sm-6">
+        <span class="h3">Live Locking Rates </span>
+        <ul class="cartTable">
+            <li class="cartHead clearfix">
+                <div class="col-sm-3">Month</div>
+                <div class="col-sm-3">USD</div>
+                <div class="col-sm-3">GBP</div>
+                <div class="col-sm-3">EURO</div>                
+            </li>
+
+            {{#each months}}
+                <li class="singleIteam clearfix category-host">
+                    <div class="col-sm-3">{{name}}</div>
+                    {{#each instruments}}
+                        <div class="col-sm-3 {{code}}">{{price}}</div>
+                    {{/each}}
+                </li>
+            {{/each}}
+        </ul>
+    </div>
+	<div class="col-sm-12 transactions-table">
 	<span class="h3">Transactions</span>
 
 	<ul class="cartTable">
@@ -11,35 +48,47 @@
     						<div class="col-sm-2">Hedge Price</div>
     						<div class="col-sm-2">Action</div>
     					</li>
-    					<li class="singleIteam clearfix category-host"> 
+                        {{#each transactions}}
+    					<li class="singleIteam clearfix category-host {{#unless this.hedged}}unhedged{{/unless}}" data-time="{{getTime this.transactionDate}}"> 
     						<div class="col-sm-2">
-    							USD
+    							{{this.currency}}
     						</div>
     						<div class="col-sm-2">
-    							40 $
-    						</div>
-
-    						<div class="col-sm-2">
-    							Recieving
-    						</div>
-    						<div class="col-sm-2">
-    							24-07-2017
+    							{{this.amount}}
     						</div>
 
     						<div class="col-sm-2">
-    							Hedged
+                                {{#if this.credit}}
+                                   Recieving
+                                {{/if}}
+    							{{#unless this.credit}}
+                                  Paying
+                                {{/unless}}
+    						</div>
+    						<div class="col-sm-2">
+    							{{uppercase (formatTime transactionDate)}}
     						</div>
 
     						<div class="col-sm-2">
-    							<a href="#" class="remove_transaction"  data-id="">Remove</a>
+    							{{#if this.hedged}}
+                                    Hedged
+                                {{/if}}
+                                {{#unless this.hedged}}
+                                    -
+                                {{/unless}}
+    						</div>
+
+    						<div class="col-sm-2">
+    							<a href="#" class="remove_transaction"  data-id="{{this.id}}">Remove</a>
     						</div>
     					</li>
+                        {{/each}}
     					
     					<li class="coupon clearfix">
     						<form action="#" class="couponForm">
     							<div class="col-sm-2 dropdowncell">
 	    							<div class="duration">
-		    							<span>USD</span>
+		    							<span id="currencyVal">USD</span>
 		    							<ul class="cartOpt">
 		    								<li data-code="USD" data-price="$10">USD</li>
 		    								<li data-code="GBP" data-price="$15">GBP</li>
@@ -48,11 +97,11 @@
 	    							</div>
     							</div>
     							<div class="col-sm-3">
-    								<input type="text" placeholder="Amount">
+    								<input type="text" id="amountVal" placeholder="Amount">
     							</div>
     							<div class="col-sm-2 dropdowncell">
 	    							<div class="duration">
-		    							<span>Select</span>
+		    							<span id="creditVal">Select</span>
 		    							<ul class="cartOpt">
 		    								<li data-code="Recieving" data-price="$10">Recieving</li>
 		    								<li data-code="Paying" data-price="$15">Paying</li>
@@ -61,7 +110,7 @@
     							</div>
     							
     							<div class="col-sm-3">
-    								<input type="text" placeholder="Date" class="datepicker" />
+    								<input type="text" id="dateVal" placeholder="Date" class="datepicker" />
     							</div>
 
     							<div class="col-sm-2">
@@ -71,10 +120,40 @@
     					</li>
     				</ul>
 	</div>
+     <div class="col-sm-12 place-hedge">
+        <button id="place_order" class="Btn"> Place Hedge</button>
+    </div>
+
+    <button id="custom-button" style="display:none">WTF</button>
+
 </div>
 
 
 <script type="text/javascript">
+
+        function updateTicker() {
+            var query_string = "{{queryString}}";
+            $.ajax({
+                url : "/dashboard/livePrices",
+                contentType : 'application/json'
+            }).done(function(resp){
+                console.log("got resp", resp);
+                if(resp.status === "Success"){
+                    var data = resp.results.data;
+                    for(var k=0;k<data.length;k++){
+                        var currData = data[k];
+                        for(var j=0;j<currData.instruments.length;j++){
+                            var code = currData.instruments[j].code;
+                            var price = currData.instruments[j].price;
+                            $('.'+code).html(price+"");
+                        }
+                    }
+                }
+            }).always(function(){
+                //setTimeout(updateTicker, 5000);
+            });
+        }
+
         function addTransactionRemoveListener() {
             $('.remove_transaction').click(function(){
                 $.ajax({
@@ -95,7 +174,7 @@
 
 
         function addTransactionRow(data) {
-            var templatString = `<li class="singleIteam clearfix category-host"> 
+            var templateString = `<li class="singleIteam clearfix category-host"> 
                             <div class="col-sm-2">
                                 DATA_CURRENCY
                             </div>
@@ -124,16 +203,50 @@
             templateString = templateString.replace("DATA_CURRENCY", data.currency);
             templateString = templateString.replace("DATA_AMOUNT", data.amount);
             templateString = templateString.replace("DATA_CREDIT", data.credit? 'Recieving' : 'Paying');
-            templateString = templateString.replace("DATA_DATE", data.transactionDate);
-            templateString = templateString.replace("DATA_HEDGED", data.hedged);
+            var date = new Date("2017-06-10T16:08:00");
+
+            var year = date.getFullYear();
+            var month = date.getMonth()+1;
+            var day = date.getDate();
+
+            if (day < 10) {
+              day = '0' + day;
+            }
+            if (month < 10) {
+              month = '0' + month;
+            }
+            var formattedDate = day + '/' + month + '/' + year;
+
+            templateString = templateString.replace("DATA_DATE", formattedDate);
+            templateString = templateString.replace("DATA_HEDGED", data.hedged? 'Hedged' : '-');
             templateString = templateString.replace("DATA_ID", data.id);
             $(templateString).insertBefore('.coupon');
+            addTransactionRemoveListener();
 
 
 
         }
   
         $(document).ready(function(){
+
+            setTimeout(updateTicker, 1000);
+
+            /*KiteConnect.ready(function(){
+                var ws = new WebSocket("wss://ws.kite.trade?api_key={{apiKey}}&access_token={{tickerToken}}");
+                ws.onopen = function(){
+                    console.log("Got here");
+                    var message = {"a": "mode", "v": ["ltp", [884737]]};
+                    ws.send(JSON.stringify(message));
+                }
+
+                ws.onmessage = function(e){
+                    console.log("got data", e.data);
+                    var reader = new FileReader();
+                    reader.onload = function() { console.log("reading text", reader.result)};
+                    reader.readAsText(e.data);
+                }
+                
+            });*/
             
             addTransactionRemoveListener();
 
@@ -144,10 +257,10 @@
                     dataType : 'json',
                     contentType: "application/json",
                     data: JSON.stringify({
-                        currency: 'USD',
-                        amount : 40000,
-                        credit : true,
-                        transactionDate : '20-04-2017'
+                        currency: $('#currencyVal').html().trim(),
+                        amount : parseInt($('#amountVal').val()),
+                        credit : $('#creditVal').html().trim() == 'Recieving',
+                        transactionDate : $('#dateVal').val()
                     })
                 }).done(function(resp){
                     console.log("got response", resp);
@@ -156,6 +269,76 @@
                     }
                 });
                 return false;
+            });
+
+
+            $('#place_order').click(function(){
+
+                KiteConnect.ready(function(){
+                    var kite = new KiteConnect("9cbd464uyo3dphy3");
+                    var transactions = $('.unhedged');
+                    var i=0;
+                    var currencyMap = { };
+                    var currTime = new Date();
+                    for(i=0;i<transactions.length;i++){
+                        var time = $(transactions[i]).attr("data-time");
+                        if(time > ""+currTime.getTime()){
+                            var divElems = $(transactions[i]).find('div');
+                            var currency = $(divElems[0]).html().trim();
+                            var amount = $(divElems[1]).html().trim();
+                            var credit = $(divElems[2]).html().trim();
+                            var month = $(divElems[3]).html().trim();
+                            var year = month.substring(month.length, month.length - 2);
+                            month = month.replace(/[0-9]/g, "");
+                            month = month.replace(/-/g, "");
+                            month = month.replace(/ /g, "");
+                            if(credit === '-')
+                                amount = '-' + amount;
+
+                            var futName = currency+'INR' + year + month + 'FUT';
+
+                            currencyMap[futName] = currencyMap[futName] || 0;
+                            currencyMap[futName] += parseInt(amount);
+                        }
+                    }
+                    console.log("currency map", currencyMap);
+
+                    var transactionsAdded = false;
+                    for (var futName in currencyMap){
+                        transactionsAdded = true;
+                        var quantity = Math.floor(currencyMap[futName]/1000);
+                        var buy = quantity > 0 ? "SELL" : "BUY";
+                        quantity = Math.abs(quantity);
+                        var orderObject = {
+                            "variety": "regular",
+                            "exchange": "CDS",
+                            "product" : "NRML",
+                            "tradingsymbol": futName,
+                            "quantity": quantity,
+                            "transaction_type": buy,
+                            "order_type": "MARKET"
+                        };
+                        console.log("orderObject added", orderObject);
+                        kite.add(orderObject);
+                    }
+
+                    if(transactionsAdded){
+                        console.log("transactions Added");
+
+                        kite.finished(function(status, request_token){
+                            console.log("request finished", status, request_token);
+                        });   
+
+                        kite.link("#custom-button");
+
+                        console.log("added items", kite.get());
+                        $('#custom-button').click();
+                    }
+
+
+
+                });
+
             });
         
         });

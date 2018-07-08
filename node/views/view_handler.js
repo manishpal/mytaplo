@@ -6,6 +6,7 @@ var shortid = require('shortid');
 var fs = require('fs');
 var os = require('os');
 var ifaces = os.networkInterfaces();
+var moment = require('moment');
 
 var staticVersion = shortid.generate();
 function ViewHandler(){}
@@ -18,7 +19,7 @@ ViewHandler.initializeGlobalVars = function(){
 };
 
 ViewHandler.initializeHelpers = function(){
-
+    console.log("came in helpers");
     hbs.registerHelper('ifCond', function (argv1, argv2, options) {
         if (argv1 === argv2)
             return options.fn(this);
@@ -95,6 +96,15 @@ ViewHandler.initializeHelpers = function(){
       if(index % 3 == number)
         return options.fn(this);
       return options.inverse(this);
+    });
+
+    hbs.registerHelper("formatTime", function(time){
+        format = "DD - MMM - YYYY";
+        return moment(time).format(format);
+    });
+
+    hbs.registerHelper("getTime", function(time){
+        return time.getTime();
     });
 
     hbs.registerHelper("truncate", function(string, length) {
@@ -187,7 +197,8 @@ ViewHandler.renderViewWithParams = function( requestParams, res, options ){
         delete options.view;
 
         res.render( view, requestParams, function( err, html ){
-            //console.log("Got err", html);
+            if(err)
+                console.log("Got err", err);
             res.send(html);
         });
     

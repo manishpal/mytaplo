@@ -11,6 +11,7 @@ mongoose.connection.on('error',(err) => {
 // Importing all the models
 require('./models/User');
 require('./models/Transaction');
+require('./models/TickerToken');
 require('./lib/initializers');
 
 const app = require('./app');

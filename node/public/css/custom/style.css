@@ -319,6 +319,10 @@ img {
 	animation-delay: 0.2s;
 }
 
+.center {
+	text-align: center;
+}
+
 @-webkit-keyframes sk-cubeGridScaleDelay {
 	0%,
 	70%,
@@ -2900,6 +2904,15 @@ ul.regDomains .domainName a:hover {
 	background: #f0f5fa
 }
 
+.place-hedge {
+	text-align: center;
+	margin-top: 50px;
+}
+
+.transactions-table {
+	margin-top:40px;
+}
+
 
 /*******************************************/
 
@@ -2927,7 +2940,7 @@ ul.regDomains .domainName a:hover {
 	display: inline-block;
 	float: left;
 	padding: 20px 0 20px 30px;
-	line-height: 30px
+	line-height: 10px
 }
 
 .cartTable > li > div.product {
