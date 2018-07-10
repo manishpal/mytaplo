@@ -3021,6 +3021,10 @@ span.closeIcon:hover {
 	text-align:center;
 }
 
+.border-top {
+	border-top : 1px solid #eaeaea;
+}
+
 .duration > span::before {
 	color: #a8b9c9;
 	content: "";

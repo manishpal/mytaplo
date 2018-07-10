@@ -23,7 +23,7 @@
                         <div class="col-sm-2">{{average_price}}</div>
                         <div class="col-sm-2 {{tradingsymbol}}" id="{{tradingsymbol}}-ltp">{{last_price}}</div>
                         <div class="col-sm-3 pnl" data-quantity="{{quantity}}000" data-cost="{{average_price}}" 
-                         data-ltp-target="{{tradingsymbol}}-ltp">0</div> 
+                         data-ltp-target="{{tradingsymbol}}-ltp">-</div> 
                     {{/each}}
                 {{/if}}
             </li>
@@ -273,8 +273,10 @@
                 $('.prices').hide();
                 if(val == "Recieving"){ 
                     $('.buy-price').show();
+                    $('.buy-price').removeClass('hide');                   
                 }else{
                     $('.sell-price').show();
+                    $('.sell-price').removeClass('hide');   
                 }
             })
 
@@ -360,6 +362,7 @@
 
                         kite.finished(function(status, request_token){
                             console.log("request finished", status, request_token);
+
                         });   
 
                         kite.link("#custom-button");

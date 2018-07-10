@@ -1,5 +1,6 @@
-<footer class="secPdngT animated" id="footer">
+<footer class="{{#unless loggedIn}}secPdngT{{/unless}} {{#if loggedIn}}border-top{{/if}} animated" id="footer">
         <div class="container">
+            {{#unless loggedIn}}
                 <div class="row">
                         <div class="col-sm-3">
                                 <div class="footerInfo col-md-9">
@@ -7,6 +8,7 @@
                                 </div>
                         </div>
 
+                        
                         <div class="contact-form col-sm-6">
                                         <div class="h2 center" id="thankyou_message" style="display:none">
                                                 Thanks! We will contact you soon.
@@ -35,6 +37,7 @@
                                 </div>
 
                          </div>
+                       
                                         <!--    <div class="footerTxt">
                                                         <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh eui smod tincidunt ut laoreet dolore magna.</p>
                                                 </div> -->
@@ -78,6 +81,7 @@
                                 </div>
                         </div>
                 </div>
+          {{/unless}}
                 <div class="row">
                         <div class="col-md-12">
                                 <div class="copyrightTxt">

@@ -19,10 +19,10 @@ exports.home = async (req,res) => {
 	}
 
 	let position = await positionModel.findOne({user : req.user});
-	let marketPositions = []
-	if(position){
+	let marketPositions = await this.getPositions(req.user.accessToken);
+	console.log("marketPositions length", marketPositions);
+	if(!marketPositions || marketPositions.length === 0){
 		marketPositions = JSON.parse(position.positions);
-		console.log("market position", marketPositions)
 	}
 
 	let params = { 
@@ -36,6 +36,19 @@ exports.home = async (req,res) => {
 				};
 
     return viewHelper.renderViewWithParams(params, res, {view : 'dashboard'})
+}
+
+
+exports.getPositions = async (accessToken) => {
+	let positions = await kite.getPositions(undefined, accessToken);
+	console.log("got positions", positions);
+	var validCurr = ['USDINR', 'GBPINR', 'EURINR'];
+	//We want only currency positions
+	var currPositions = undefined;
+	if(positions.net && positions.net.length > 0){
+		currPositions = positions.net.filter(function(m){ return validCurr.indexOf(m.tradingsymbol.substring(0,6)) !== -1;});
+	}
+	return currPositions;
 }
 
 
@@ -56,7 +69,7 @@ exports.getLivePrices = async (accessToken) => {
 	});
 
 	instruments = [].concat.apply([], instruments);	
-	console.log("instruments are", instruments);
+	//console.log("instruments are", instruments);
 
 	let response = await kite.getQuotesFull(instruments, accessToken);
 	if(response === undefined)
