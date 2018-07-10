@@ -245,6 +245,10 @@ img {
 	color: #233141;
 }
 
+.tradingsymbol {
+	padding-left : 5px !important;
+}
+
 
 /*preloader*/
 
@@ -2998,6 +3002,13 @@ span.closeIcon:hover {
 	background-image: url(../../img/icon/cart-domain.png);
 }
 
+.lock-rates {
+	width : 150px !important;
+	margin-left: 20px;
+	color: #000;
+	font-family: 'proxima_novasemibold';
+}
+
 .duration > span {
 	border: 1px solid #a8b9c9;
 	cursor: pointer;
@@ -3007,7 +3018,7 @@ span.closeIcon:hover {
 	-webkit-transition: all 0.4s ease 0s;
 	transition: all 0.4s ease 0s;
 	width: 100%;
-	padding-left:33%;
+	text-align:center;
 }
 
 .duration > span::before {

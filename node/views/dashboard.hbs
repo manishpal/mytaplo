@@ -5,32 +5,55 @@
         <ul class="cartTable">
             <li class="cartHead clearfix">
                 <div class="col-sm-3">Instrument</div>
-                <div class="col-sm-3">Price</div>
-                <div class="col-sm-3">Live Price</div>
+                <div class="col-sm-2">Quantity</div>
+                <div class="col-sm-2">Price</div>
+                <div class="col-sm-2">LTP</div>
                 <div class="col-sm-3">Profit/Loss</div>                
             </li>
             <li class="singleIteam clearfix">
+                {{#unless hasPosition}}
                 <div class="col-sm-12 center">
                     No hedge placed yet.
                 </div>
+                {{/unless}}
+                {{#if hasPosition}}
+                    {{#each positions}}
+                        <div class="col-sm-3 tradingsymbol">{{tradingsymbol}}</div>
+                        <div class="col-sm-2">{{quantity}}000</div>
+                        <div class="col-sm-2">{{average_price}}</div>
+                        <div class="col-sm-2 {{tradingsymbol}}" id="{{tradingsymbol}}-ltp">{{last_price}}</div>
+                        <div class="col-sm-3 pnl" data-quantity="{{quantity}}000" data-cost="{{average_price}}" 
+                         data-ltp-target="{{tradingsymbol}}-ltp">0</div> 
+                    {{/each}}
+                {{/if}}
             </li>
         </ul>
     </div>
     <div class="col-sm-6">
         <span class="h3">Live Locking Rates </span>
+        <span class="duration">
+            <span class="lock-rates" id="">Recieving</span>
+                <ul class="cartOpt">
+                    <li class="lock-rate-prices" data-code="Recieving" data-price="$10">Recieving</li>
+                    <li class="lock-rate-prices" data-code="Paying" data-price="$15">Paying</li>
+                </ul>
+        </span>
+
         <ul class="cartTable">
             <li class="cartHead clearfix">
                 <div class="col-sm-3">Month</div>
                 <div class="col-sm-3">USD</div>
-                <div class="col-sm-3">GBP</div>
-                <div class="col-sm-3">EURO</div>                
+                <div class="col-sm-3">EUR</div>
+                <div class="col-sm-3">GBP</div>                
             </li>
 
             {{#each months}}
                 <li class="singleIteam clearfix category-host">
                     <div class="col-sm-3">{{name}}</div>
                     {{#each instruments}}
-                        <div class="col-sm-3 {{code}}">{{price}}</div>
+                        <div class="col-sm-3 prices ltp-price {{code}} hide">{{price}}</div>
+                        <div class="col-sm-3 prices buy-price {{code}}-buy-price">{{buy_price}}</div>
+                        <div class="col-sm-3 prices sell-price {{code}}-sell-price hide">{{sell_price}}</div>
                     {{/each}}
                 </li>
             {{/each}}
@@ -43,9 +66,8 @@
     					<li class="cartHead clearfix">
     						<div class="col-sm-2">currency</div>
     						<div class="col-sm-2">amount</div>
-    						<div class="col-sm-2">Recieving/Paying</div>
-    						<div class="col-sm-2">Date</div>
-    						<div class="col-sm-2">Hedge Price</div>
+    						<div class="col-sm-3">Recieving/Paying</div>
+    						<div class="col-sm-3">Date</div>
     						<div class="col-sm-2">Action</div>
     					</li>
                         {{#each transactions}}
@@ -57,7 +79,7 @@
     							{{this.amount}}
     						</div>
 
-    						<div class="col-sm-2">
+    						<div class="col-sm-3">
                                 {{#if this.credit}}
                                    Recieving
                                 {{/if}}
@@ -65,17 +87,8 @@
                                   Paying
                                 {{/unless}}
     						</div>
-    						<div class="col-sm-2">
+    						<div class="col-sm-3">
     							{{uppercase (formatTime transactionDate)}}
-    						</div>
-
-    						<div class="col-sm-2">
-    							{{#if this.hedged}}
-                                    Hedged
-                                {{/if}}
-                                {{#unless this.hedged}}
-                                    -
-                                {{/unless}}
     						</div>
 
     						<div class="col-sm-2">
@@ -92,7 +105,7 @@
 		    							<ul class="cartOpt">
 		    								<li data-code="USD" data-price="$10">USD</li>
 		    								<li data-code="GBP" data-price="$15">GBP</li>
-		    								<li data-code="EURO" data-price="$30">EURO</li>
+		    								<li data-code="EUR" data-price="$30">EUR</li>
 		    							</ul>
 	    							</div>
     							</div>
@@ -145,28 +158,47 @@
                         for(var j=0;j<currData.instruments.length;j++){
                             var code = currData.instruments[j].code;
                             var price = currData.instruments[j].price;
+                            var buy_price = currData.instruments[j].buy_price;
+                            var sell_price = currData.instruments[j].sell_price;
                             $('.'+code).html(price+"");
+                            $('.'+code+'-buy-price').html(buy_price+"");
+                            $('.'+code+'-sell-price').html(sell_price+"");
+                            
+                            $('.pnl').each(function(){
+                                var cost = parseFloat($(this).attr("data-cost"));
+                                var ltpElem = '#'+$(this).attr("data-ltp-target");
+                                //console.log('ltp elem', ltpElem, $(this).attr("data-ltp-target"));
+                                var ltpvalue = $(ltpElem).html().trim();
+                                var ltp = parseFloat(ltpvalue);
+                                var quantity = parseInt($(this).attr("data-quantity"));
+                                $(this).html(Number((quantity*(ltp-cost)).toFixed(4))+"");
+                            })
                         }
                     }
                 }
             }).always(function(){
-                //setTimeout(updateTicker, 5000);
+                setTimeout(updateTicker, 5000);
             });
         }
 
         function addTransactionRemoveListener() {
             $('.remove_transaction').click(function(){
-                $.ajax({
-                    url : '/transactions/remove',
-                    type : 'POST',
-                    dataType : 'json',
-                    contentType : 'application/json',
-                    data : JSON.stringify({
-                        id : $(this).attr("data-id")
-                    })
-                }).done(function(resp){
-                    console.log("got response", resp);
-                });
+                $('#amountVal').val($(this).attr('data-amount'));
+                var date = new Date();
+                var year = date.getFullYear();
+                var month = date.getMonth()+1;
+                var day = date.getDate();
+
+                if (day < 10) {
+                    day = '0' + day;
+                }
+                if (month < 10) {
+                    month = '0' + month;
+                }
+
+                $('#dateVal').val(month+'/'+day+'/'+year); 
+                $('#creditVal').html($(this).attr("data-credit"));
+                $('#currencyVal').html($(this).attr("data-currency"));               
 
                 return false;
             });
@@ -174,7 +206,7 @@
 
 
         function addTransactionRow(data) {
-            var templateString = `<li class="singleIteam clearfix category-host"> 
+            var templateString = `<li class="singleIteam clearfix category-host unhedged" data-time="DATA_TIME"> 
                             <div class="col-sm-2">
                                 DATA_CURRENCY
                             </div>
@@ -190,10 +222,6 @@
                             </div>
 
                             <div class="col-sm-2">
-                                DATA_HEDGED
-                            </div>
-
-                            <div class="col-sm-2">
                                 <a href="#" class="remove_transaction"  data-id="DATA_ID">Remove</a>
                             </div>
                         </li>
@@ -203,24 +231,31 @@
             templateString = templateString.replace("DATA_CURRENCY", data.currency);
             templateString = templateString.replace("DATA_AMOUNT", data.amount);
             templateString = templateString.replace("DATA_CREDIT", data.credit? 'Recieving' : 'Paying');
-            var date = new Date("2017-06-10T16:08:00");
+            var date = new Date(data.transactionDate);
+
+            templateString = templateString.replace("DATA_TIME", date.getTime());
+
+            var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+                                ];
 
             var year = date.getFullYear();
-            var month = date.getMonth()+1;
+            var month = date.getMonth();
             var day = date.getDate();
 
             if (day < 10) {
               day = '0' + day;
             }
-            if (month < 10) {
-              month = '0' + month;
-            }
-            var formattedDate = day + '/' + month + '/' + year;
+            var formattedDate = day + ' - ' + monthNames[month] + ' - ' + year;
 
             templateString = templateString.replace("DATA_DATE", formattedDate);
             templateString = templateString.replace("DATA_HEDGED", data.hedged? 'Hedged' : '-');
             templateString = templateString.replace("DATA_ID", data.id);
             $(templateString).insertBefore('.coupon');
+
+            $('#dateVal').val('');
+            $('#amountVal').val('');
+
             addTransactionRemoveListener();
 
 
@@ -231,24 +266,17 @@
 
             setTimeout(updateTicker, 1000);
 
-            /*KiteConnect.ready(function(){
-                var ws = new WebSocket("wss://ws.kite.trade?api_key={{apiKey}}&access_token={{tickerToken}}");
-                ws.onopen = function(){
-                    console.log("Got here");
-                    var message = {"a": "mode", "v": ["ltp", [884737]]};
-                    ws.send(JSON.stringify(message));
-                }
-
-                ws.onmessage = function(e){
-                    console.log("got data", e.data);
-                    var reader = new FileReader();
-                    reader.onload = function() { console.log("reading text", reader.result)};
-                    reader.readAsText(e.data);
-                }
-                
-            });*/
-            
             addTransactionRemoveListener();
+
+            $('.lock-rate-prices').click(function(){
+                var val = $(this).attr('data-code');
+                $('.prices').hide();
+                if(val == "Recieving"){ 
+                    $('.buy-price').show();
+                }else{
+                    $('.sell-price').show();
+                }
+            })
 
             $('#add_transaction').click(function(){
                 $.ajax({
@@ -275,7 +303,7 @@
             $('#place_order').click(function(){
 
                 KiteConnect.ready(function(){
-                    var kite = new KiteConnect("9cbd464uyo3dphy3");
+                    var kite = new KiteConnect("{{apiKey}}");
                     var transactions = $('.unhedged');
                     var i=0;
                     var currencyMap = { };
@@ -292,13 +320,15 @@
                             month = month.replace(/[0-9]/g, "");
                             month = month.replace(/-/g, "");
                             month = month.replace(/ /g, "");
-                            if(credit === '-')
+                            if(credit === 'Paying')
                                 amount = '-' + amount;
 
                             var futName = currency+'INR' + year + month + 'FUT';
 
                             currencyMap[futName] = currencyMap[futName] || 0;
                             currencyMap[futName] += parseInt(amount);
+                            if($('#'+futName+'-position').length > 0)
+                                currencyMap[futName] -= parseInt(('#'+futName+'-position').html());
                         }
                     }
                     console.log("currency map", currencyMap);
@@ -306,9 +336,12 @@
                     var transactionsAdded = false;
                     for (var futName in currencyMap){
                         transactionsAdded = true;
-                        var quantity = Math.floor(currencyMap[futName]/1000);
-                        var buy = quantity > 0 ? "SELL" : "BUY";
-                        quantity = Math.abs(quantity);
+                        var quantity = Math.floor(Math.abs(currencyMap[futName])/1000);
+
+                        var buy = currencyMap[futName] > 0 ? "SELL" : "BUY";
+                        if(quantity === 0)
+                            continue;
+
                         var orderObject = {
                             "variety": "regular",
                             "exchange": "CDS",

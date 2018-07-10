@@ -6,7 +6,7 @@ const moment = require('moment');
 exports.add = async (req,res) => {
 	console.log("req.body is", req.body);
 	let data ={user : req.user, currency : req.body.currency, amount : req.body.amount};
-	data.transactionDate  = moment(req.body.transactionDate, "DD-MM-YYYY");
+	data.transactionDate  = moment(req.body.transactionDate, "MM/DD/YYYY");
 	data.credit = req.body.credit? true : false
 	const transactionData = await transactionModel.create(data);
     res.status(200).json(jsonHelper.getResponse("Success",null,{data : transactionData}));

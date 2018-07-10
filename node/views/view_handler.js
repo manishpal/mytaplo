@@ -195,7 +195,7 @@ ViewHandler.initializePartials = function(){
 ViewHandler.renderViewWithParams = function( requestParams, res, options ){
         var view = options.view;
         delete options.view;
-
+        
         res.render( view, requestParams, function( err, html ){
             if(err)
                 console.log("Got err", err);

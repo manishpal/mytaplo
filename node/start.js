@@ -12,6 +12,7 @@ mongoose.connection.on('error',(err) => {
 require('./models/User');
 require('./models/Transaction');
 require('./models/TickerToken');
+require('./models/Position');
 require('./lib/initializers');
 
 const app = require('./app');

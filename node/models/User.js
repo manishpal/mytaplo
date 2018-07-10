@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 const timestamps = require('mongoose-timestamp');
 
 const userSchema = new Schema({
+    userId : {
+        type : String,
+        unique : true,
+        index : true
+    },
     name : {
         type:String
     },
@@ -10,9 +15,11 @@ const userSchema = new Schema({
         type: String,
         lowercase: true,
         trim: true,
-        unique: true
     },
     password : {
+        type : String
+    },
+    accessToken : {
         type : String
     }    
 }, {

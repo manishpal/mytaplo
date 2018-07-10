@@ -126,7 +126,13 @@
                                                                         <li><a href="single-blog.html">single blog</a></li>
                                                                         </ul>
                                                         </li>  -->
-                                                        <li><a href="#footer" class="header-link">SIGN UP</a></li>
+                                                        {{#unless loggedIn}}
+                                                            <li><a href="#footer" class="header-link">SIGN UP</a></li>
+                                                            <li><a href="/login" class="header-link">SIGN IN</a></li>
+                                                        {{/unless}}
+                                                        {{#if loggedIn}}
+                                                            <li><a href="/logout" class="header-link">LOG OUT</a></li>                                                            
+                                                        {{/if}}
                                                 </ul>
                                         </nav>
                                 </div>
