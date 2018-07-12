@@ -105,9 +105,14 @@ exports.getLivePrices = async (accessToken) => {
 
 
 exports.livePrices = async (req, res) => {
+	if(!req.user){
+		res.status(401).json(jsonHelper.getResponse("Failure", null, {data : 'Unauthorized'}));
+		return;
+	}
+
 	let months = await this.getLivePrices(req.user.accessToken);
 	if(months=== undefined){
-		res.redirect('/');
+		res.status(200).json(jsonHelper.getResponse("Failure", null, {data : 'Some api error'}));
 		return;
 	}
 	res.status(200).json(jsonHelper.getResponse("Success",null,{data : months}));

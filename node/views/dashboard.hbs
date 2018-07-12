@@ -32,10 +32,10 @@
     <div class="col-sm-6">
         <span class="h3">Live Locking Rates </span>
         <span class="duration">
-            <span class="lock-rates" id="">Recieving</span>
+            <span class="lock-rates" id="">Income</span>
                 <ul class="cartOpt">
-                    <li class="lock-rate-prices" data-code="Recieving" data-price="$10">Recieving</li>
-                    <li class="lock-rate-prices" data-code="Paying" data-price="$15">Paying</li>
+                    <li class="lock-rate-prices" data-code="Income" data-price="$10">Income</li>
+                    <li class="lock-rate-prices" data-code="Expense" data-price="$15">Expense</li>
                 </ul>
         </span>
 
@@ -60,13 +60,13 @@
         </ul>
     </div>
 	<div class="col-sm-12 transactions-table">
-	<span class="h3">Transactions</span>
+	<span class="h3">Payments</span>
 
 	<ul class="cartTable">
     					<li class="cartHead clearfix">
     						<div class="col-sm-2">currency</div>
     						<div class="col-sm-2">amount</div>
-    						<div class="col-sm-3">Recieving/Paying</div>
+    						<div class="col-sm-3">Income/Expense</div>
     						<div class="col-sm-3">Date</div>
     						<div class="col-sm-2">Action</div>
     					</li>
@@ -81,10 +81,10 @@
 
     						<div class="col-sm-3">
                                 {{#if this.credit}}
-                                   Recieving
+                                   Income
                                 {{/if}}
     							{{#unless this.credit}}
-                                  Paying
+                                  Expense
                                 {{/unless}}
     						</div>
     						<div class="col-sm-3">
@@ -92,7 +92,16 @@
     						</div>
 
     						<div class="col-sm-2">
-    							<a href="#" class="remove_transaction"  data-id="{{this.id}}">Remove</a>
+    							<a href="#" class="remove_transaction"  data-time="{{getTime this.transactionDate}}" data-credit="{{this.credit}}" data-currency="{{this.currency}}" data-amount="{{this.amount}}" data-id="{{this.id}}">
+                                    {{#if this.credit}}
+                                        Payment Received
+                                    {{/if}}
+
+                                    {{#unless this.credit}}
+                                        Expense Paid
+                                    {{/unless}}
+                                    
+                                </a>
     						</div>
     					</li>
                         {{/each}}
@@ -116,8 +125,8 @@
 	    							<div class="duration">
 		    							<span id="creditVal">Select</span>
 		    							<ul class="cartOpt">
-		    								<li data-code="Recieving" data-price="$10">Recieving</li>
-		    								<li data-code="Paying" data-price="$15">Paying</li>
+		    								<li data-code="Income" data-price="$10">Income</li>
+		    								<li data-code="Expense" data-price="$15">Expense</li>
 		    							</ul>
 	    							</div>
     							</div>
@@ -127,7 +136,7 @@
     							</div>
 
     							<div class="col-sm-2">
-    								<button id="add_transaction" type="submit">Add transaction</button>
+    								<button id="add_transaction" type="submit">Add payment</button>
     							</div>
     						</form>
     					</li>
@@ -178,13 +187,15 @@
                 }
             }).always(function(){
                 setTimeout(updateTicker, 5000);
+            }).fail(function(){
+                window.location.href = window.location.origin + '/login';
             });
         }
 
         function addTransactionRemoveListener() {
             $('.remove_transaction').click(function(){
                 $('#amountVal').val($(this).attr('data-amount'));
-                var date = new Date();
+                var date = new Date(new Number($(this).attr('data-time')));
                 var year = date.getFullYear();
                 var month = date.getMonth()+1;
                 var day = date.getDate();
@@ -197,7 +208,12 @@
                 }
 
                 $('#dateVal').val(month+'/'+day+'/'+year); 
-                $('#creditVal').html($(this).attr("data-credit"));
+                var credit = $(this).attr("data-credit");
+                if(credit === "true")
+                    $('#creditVal').html('Expense');
+                else
+                    $('#creditVal').html('Income');
+                
                 $('#currencyVal').html($(this).attr("data-currency"));               
 
                 return false;
@@ -214,26 +230,28 @@
                                 DATA_AMOUNT
                             </div>
 
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 DATA_CREDIT
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 DATA_DATE
                             </div>
 
                             <div class="col-sm-2">
-                                <a href="#" class="remove_transaction"  data-id="DATA_ID">Remove</a>
+                                <a href="#" class="remove_transaction" data-time="DATA_TIME" data-credit="DATA_CREDIT_BOOL" data-currency="DATA_CURRENCY" data-amount="DATA_AMOUNT" data-id="DATA_ID">ACTION_TEXT</a>
                             </div>
                         </li>
 
             `;
 
-            templateString = templateString.replace("DATA_CURRENCY", data.currency);
-            templateString = templateString.replace("DATA_AMOUNT", data.amount);
-            templateString = templateString.replace("DATA_CREDIT", data.credit? 'Recieving' : 'Paying');
+            templateString = templateString.replace(/DATA_CURRENCY/g, data.currency);
+            templateString = templateString.replace(/DATA_AMOUNT/g, data.amount);
+            templateString = templateString.replace("DATA_CREDIT_BOOL", data.credit? 'true' : 'false');
+            templateString = templateString.replace(/DATA_CREDIT/g, data.credit? 'Income' : 'Expense');
+
             var date = new Date(data.transactionDate);
 
-            templateString = templateString.replace("DATA_TIME", date.getTime());
+            templateString = templateString.replace(/DATA_TIME/g, date.getTime());
 
             var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
                                 "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
@@ -249,7 +267,7 @@
             var formattedDate = day + ' - ' + monthNames[month] + ' - ' + year;
 
             templateString = templateString.replace("DATA_DATE", formattedDate);
-            templateString = templateString.replace("DATA_HEDGED", data.hedged? 'Hedged' : '-');
+            templateString = templateString.replace("ACTION_TEXT", data.credit? 'Payment Received' : 'Expense Paid');
             templateString = templateString.replace("DATA_ID", data.id);
             $(templateString).insertBefore('.coupon');
 
@@ -271,7 +289,7 @@
             $('.lock-rate-prices').click(function(){
                 var val = $(this).attr('data-code');
                 $('.prices').hide();
-                if(val == "Recieving"){ 
+                if(val == "Income"){ 
                     $('.buy-price').show();
                     $('.buy-price').removeClass('hide');                   
                 }else{
@@ -289,7 +307,7 @@
                     data: JSON.stringify({
                         currency: $('#currencyVal').html().trim(),
                         amount : parseInt($('#amountVal').val()),
-                        credit : $('#creditVal').html().trim() == 'Recieving',
+                        credit : $('#creditVal').html().trim() == 'Income',
                         transactionDate : $('#dateVal').val()
                     })
                 }).done(function(resp){
@@ -322,7 +340,7 @@
                             month = month.replace(/[0-9]/g, "");
                             month = month.replace(/-/g, "");
                             month = month.replace(/ /g, "");
-                            if(credit === 'Paying')
+                            if(credit === 'Expense')
                                 amount = '-' + amount;
 
                             var futName = currency+'INR' + year + month + 'FUT';
@@ -337,12 +355,13 @@
 
                     var transactionsAdded = false;
                     for (var futName in currencyMap){
-                        transactionsAdded = true;
                         var quantity = Math.floor(Math.abs(currencyMap[futName])/1000);
 
                         var buy = currencyMap[futName] > 0 ? "SELL" : "BUY";
                         if(quantity === 0)
                             continue;
+
+                        transactionsAdded = true;
 
                         var orderObject = {
                             "variety": "regular",
@@ -369,6 +388,8 @@
 
                         console.log("added items", kite.get());
                         $('#custom-button').click();
+                    }else{
+                        window.alert("No hedge needs to be placed ");
                     }
 
 

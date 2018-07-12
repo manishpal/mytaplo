@@ -26,7 +26,7 @@ exports.getQuotesFull = function(instrumentNames, access_token){
 		//console.log("got resp", response);
 		return response;
 	}).catch(function(err){
-		console.log("got err", err);
+		console.log("got err while quotes", err);
 		return undefined;
 	});
 }
@@ -74,7 +74,7 @@ exports.getPositions = function(request_token, access_token) {
 			console.log("got positions", resp);
 			return resp;
 		}).catch(function(err){
-			console.log("got err", err);
+			console.log("got err while positions", err);
 		});
 	}
 }
