@@ -39,14 +39,15 @@ exports.getPositions = async (user) => {
 	console.log("got positions", positions);
 	var validCurr = ['USDINR', 'GBPINR', 'EURINR'];
 	//We want only currency positions
-	var currPositions = undefined;
+	var currPositions = [];
 	if(positions.net && positions.net.length > 0){
 		currPositions = positions.net.filter(function(m){ return validCurr.indexOf(m.tradingsymbol.substring(0,6)) !== -1;});
 	}
 
 	if(!currPositions || currPositions.length === 0){
 		let position = await positionModel.findOne({user : user});
-		currPositions = JSON.parse(position.positions);
+		if(position)
+			currPositions = JSON.parse(position.positions);
 	}
 	return currPositions;
 }
