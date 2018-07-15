@@ -6,6 +6,7 @@ const portfolioController = require('../../controllers/portfolio/portfolioContro
 
 
 router.post('/add', ensureLoggedIn('/login'), transactionController.add);
-router.post('/updatePositions', portfolioController.createPortfolio)
+router.post('/remove', ensureLoggedIn('/login'), transactionController.remove);
+router.post('/updatePositions', portfolioController.updatePortfolio)
 
 module.exports = router;

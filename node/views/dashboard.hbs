@@ -22,7 +22,7 @@
                         <div class="col-sm-2">{{quantity}}000</div>
                         <div class="col-sm-2">{{average_price}}</div>
                         <div class="col-sm-2 {{tradingsymbol}}" id="{{tradingsymbol}}-ltp">{{last_price}}</div>
-                        <div class="col-sm-3 pnl" data-quantity="{{quantity}}000" data-cost="{{average_price}}" 
+                        <div class="col-sm-3 pnl" id="{{tradingsymbol}}-position" data-quantity="{{quantity}}000" data-cost="{{average_price}}" 
                          data-ltp-target="{{tradingsymbol}}-ltp">-</div> 
                     {{/each}}
                 {{/if}}
@@ -71,7 +71,7 @@
     						<div class="col-sm-2">Action</div>
     					</li>
                         {{#each transactions}}
-    					<li class="singleIteam clearfix category-host {{#unless this.hedged}}unhedged{{/unless}}" data-time="{{getTime this.transactionDate}}"> 
+    					<li class="singleIteam clearfix category-host {{#unless this.hedged}}unhedged{{/unless}}" data-time="{{getTime this.transactionDate}}" id="{{this.id}}"> 
     						<div class="col-sm-2">
     							{{this.currency}}
     						</div>
@@ -92,14 +92,20 @@
     						</div>
 
     						<div class="col-sm-2">
-    							<a href="#" class="remove_transaction"  data-time="{{getTime this.transactionDate}}" data-credit="{{this.credit}}" data-currency="{{this.currency}}" data-amount="{{this.amount}}" data-id="{{this.id}}">
-                                    {{#if this.credit}}
-                                        Payment Received
-                                    {{/if}}
+    							<a href="#" class="remove_transaction" data-status="{{this.status}}" data-time="{{getTime this.transactionDate}}" data-credit="{{this.credit}}" data-currency="{{this.currency}}" data-amount="{{this.amount}}" data-id="{{this.id}}">
+                                    {{#ifCond this.status 'pending'}}
+                                        Remove
+                                    {{/ifCond}}
 
-                                    {{#unless this.credit}}
-                                        Expense Paid
-                                    {{/unless}}
+                                    {{#unlessCond this.status 'pending'}}
+                                        {{#if this.credit}}
+                                            Payment Received
+                                        {{/if}}
+
+                                        {{#unless this.credit}}
+                                            Expense Paid
+                                        {{/unless}}
+                                    {{/unlessCond}}
                                     
                                 </a>
     						</div>
@@ -194,6 +200,26 @@
 
         function addTransactionRemoveListener() {
             $('.remove_transaction').click(function(){
+
+                var status = $(this).attr('data-status');
+                if(status === 'pending'){
+                     var transactionId = $(this).attr("data-id");
+                    var elem = $('#'+transactionId);
+                    $.ajax({
+                        url : '/transactions/remove',
+                        type : 'POST',
+                        dataType : 'json',
+                        contentType: "application/json",
+                        data: JSON.stringify({id : transactionId})
+                    }).done(function(resp){
+                        console.log("got response", resp);
+                        if(resp.status === "Success"){
+                            $(elem).remove();
+                        }
+                    });
+                    return false;
+                }
+
                 $('#amountVal').val($(this).attr('data-amount'));
                 var date = new Date(new Number($(this).attr('data-time')));
                 var year = date.getFullYear();
@@ -221,6 +247,22 @@
         };
 
 
+        function updatePortfolio(){
+                $.ajax({
+                    url : '/transactions/updatePositions',
+                    type : 'POST',
+                    dataType : 'json',
+                    contentType: "application/json",
+                    data: JSON.stringify({})
+                }).done(function(resp){
+                    console.log("got response", resp);
+                    if(resp.status === "Success"){
+                        window.location.href=window.location.origin + '/dashboard';
+                    }
+                });
+        }
+
+
         function addTransactionRow(data) {
             var templateString = `<li class="singleIteam clearfix category-host unhedged" data-time="DATA_TIME"> 
                             <div class="col-sm-2">
@@ -238,7 +280,7 @@
                             </div>
 
                             <div class="col-sm-2">
-                                <a href="#" class="remove_transaction" data-time="DATA_TIME" data-credit="DATA_CREDIT_BOOL" data-currency="DATA_CURRENCY" data-amount="DATA_AMOUNT" data-id="DATA_ID">ACTION_TEXT</a>
+                                <a href="#" class="remove_transaction" data-status="DATA_STATUS" data-time="DATA_TIME" data-credit="DATA_CREDIT_BOOL" data-currency="DATA_CURRENCY" data-amount="DATA_AMOUNT" data-id="DATA_ID">ACTION_TEXT</a>
                             </div>
                         </li>
 
@@ -248,6 +290,7 @@
             templateString = templateString.replace(/DATA_AMOUNT/g, data.amount);
             templateString = templateString.replace("DATA_CREDIT_BOOL", data.credit? 'true' : 'false');
             templateString = templateString.replace(/DATA_CREDIT/g, data.credit? 'Income' : 'Expense');
+            templateString = templateString.replace(/DATA_STATUS/g, data.status);
 
             var date = new Date(data.transactionDate);
 
@@ -267,7 +310,12 @@
             var formattedDate = day + ' - ' + monthNames[month] + ' - ' + year;
 
             templateString = templateString.replace("DATA_DATE", formattedDate);
-            templateString = templateString.replace("ACTION_TEXT", data.credit? 'Payment Received' : 'Expense Paid');
+            var actionText = 'Remove';
+            if(data.status !== 'pending'){
+                actionText = data.credit? 'Payment Received' : 'Expense Paid';
+            }
+
+            templateString = templateString.replace("ACTION_TEXT", actionText);
             templateString = templateString.replace("DATA_ID", data.id);
             $(templateString).insertBefore('.coupon');
 
@@ -347,16 +395,22 @@
 
                             currencyMap[futName] = currencyMap[futName] || 0;
                             currencyMap[futName] += parseInt(amount);
-                            if($('#'+futName+'-position').length > 0)
-                                currencyMap[futName] -= parseInt(('#'+futName+'-position').html());
+                            
                         }
                     }
                     console.log("currency map", currencyMap);
 
                     var transactionsAdded = false;
                     for (var futName in currencyMap){
+                        currencyMap[futName] = currencyMap[futName] || 0;
+
+                        if($('#'+futName+'-position').length > 0)
+                            currencyMap[futName] += parseInt($('#'+futName+'-position').attr("data-quantity"));
+
                         var quantity = Math.floor(Math.abs(currencyMap[futName])/1000);
 
+                        console.log("got quantiti", quantity, currencyMap[futName]);
+                        
                         var buy = currencyMap[futName] > 0 ? "SELL" : "BUY";
                         if(quantity === 0)
                             continue;
@@ -381,6 +435,8 @@
 
                         kite.finished(function(status, request_token){
                             console.log("request finished", status, request_token);
+                            // We should call api here for updating portfolio;
+                            updatePortfolio();
 
                         });   
 

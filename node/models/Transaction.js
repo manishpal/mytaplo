@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const timestamps = require('mongoose-timestamp');
 const validator = require('validator');
 const constants = require('../Constants');
+const moment = require('moment');
 
 
 const transactionSchema = new Schema({
@@ -22,8 +23,10 @@ const transactionSchema = new Schema({
     transactionDate : {
         type : Date
     },
-    hedgedPrice : {
-        type : String
+    status : {
+        type : String,
+        default : 'pending',
+        enum : ['pending', 'accepted', 'rejected']
     },
     deleted : {
         type: Boolean,
@@ -35,4 +38,10 @@ const transactionSchema = new Schema({
 });
 
 transactionSchema.plugin(timestamps);
+
+transactionSchema.methods.getFutName = function(){
+    let yearmonth = moment(this.transactionDate).format("YYMMM").toUpperCase();
+    return this.currency+'INR' + yearmonth + 'FUT';
+}
+
 module.exports = mongoose.model('Transaction', transactionSchema);

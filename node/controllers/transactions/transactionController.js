@@ -7,15 +7,17 @@ exports.add = async (req,res) => {
 	console.log("req.body is", req.body);
 	let data ={user : req.user, currency : req.body.currency, amount : req.body.amount};
 	data.transactionDate  = moment(req.body.transactionDate, "MM/DD/YYYY");
+	data.status = 'pending';
 	data.credit = req.body.credit? true : false
 	const transactionData = await transactionModel.create(data);
     res.status(200).json(jsonHelper.getResponse("Success",null,{data : transactionData}));
 }
 
 exports.remove = async (req, res) => {
-	console.log("transaction Id is", req.body.id);
 	let transaction = await transactionModel.findById(req.body.id);
-	if(transaction && transaction.user.id === req.user.id){
+	console.log("transaction Id is", transaction.user + "" === ""+req.user.id);
+	if(transaction && transaction.user+"" === req.user.id+"" && transaction.status === "pending"){
+		transaction.status = 'rejected';
 		transaction.deleted = true;
 		transaction.save();
 		res.status(200).json(jsonHelper.getResponse("Success",null,{data : []}));

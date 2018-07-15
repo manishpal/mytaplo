@@ -29,7 +29,7 @@ app.use(session({
     secret: process.env.SECRET,
     key: process.env.KEY,
     resave: false,
-    cookie : {maxAge : 60000},
+    cookie : {maxAge : 600000},
     saveUninitialized: false,
     store: new MongoStore({ mongooseConnection: mongoose.connection })
   }));

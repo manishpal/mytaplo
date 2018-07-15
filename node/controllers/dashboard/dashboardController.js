@@ -10,7 +10,7 @@ var kite = require('../utils/kite');
 
 exports.home = async (req,res) => {
 	//console.log("came here", req.user);
-	let transactions = await transactionModel.find({user : req.user.id, deleted : false});
+	let transactions = await transactionModel.find({user : req.user.id, deleted : false, status : {$in : ["pending", "accepted"]}});
 	let months = await this.getLivePrices(req.user.accessToken);
 	
 	if(months === undefined){
@@ -18,12 +18,7 @@ exports.home = async (req,res) => {
 		return;
 	}
 
-	let position = await positionModel.findOne({user : req.user});
-	let marketPositions = await this.getPositions(req.user.accessToken);
-	console.log("marketPositions length", marketPositions);
-	if(!marketPositions || marketPositions.length === 0){
-		marketPositions = JSON.parse(position.positions);
-	}
+	let marketPositions = await this.getPositions(req.user);	
 
 	let params = { 
 					transactions : transactions, 
@@ -39,14 +34,19 @@ exports.home = async (req,res) => {
 }
 
 
-exports.getPositions = async (accessToken) => {
-	let positions = await kite.getPositions(undefined, accessToken);
+exports.getPositions = async (user) => {
+	let positions = await kite.getPositions(undefined, user.accessToken);
 	console.log("got positions", positions);
 	var validCurr = ['USDINR', 'GBPINR', 'EURINR'];
 	//We want only currency positions
 	var currPositions = undefined;
 	if(positions.net && positions.net.length > 0){
 		currPositions = positions.net.filter(function(m){ return validCurr.indexOf(m.tradingsymbol.substring(0,6)) !== -1;});
+	}
+
+	if(!currPositions || currPositions.length === 0){
+		let position = await positionModel.findOne({user : user});
+		currPositions = JSON.parse(position.positions);
 	}
 	return currPositions;
 }
