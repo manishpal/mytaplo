@@ -140,7 +140,7 @@ px      68    160    252    344    436    528    620    712    */
 		position: relative;
 		z-index: 1
 	}
-        .logo-custom { max-width : 80%;}
+        .logo-custom { margin-top: -17px;max-width : 80%;}
 	.homeContent:before{
 		position: absolute;
 		content: '';
@@ -420,7 +420,7 @@ px      68    160    252    344    436    528    620    712    */
 	header .headerBottomArea{
 	#	padding: 20px 0
 	}
-        .logo-custom { max-width : 80%;}
+        .logo-custom { margin-top:-17px; max-width : 80%;}
 	nav#navbar{
 		top: 58px
 	}
