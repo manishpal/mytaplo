@@ -4091,11 +4091,6 @@ header nav#navbar ul > li.dropdown-megamenu .mega-menu,
 	background: #fff
 }
 
-.seawise.homeArea {
-   background : linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 49%), url(../../img/containerImg.jpeg) no-repeat !important;
-   background-size: cover !important;
-}
-
 
 /* button hover color*/
 
