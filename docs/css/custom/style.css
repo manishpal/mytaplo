@@ -4129,7 +4129,8 @@ header .topInfo li.clientAreaLi span:hover,
 }
 
 .logo-custom {
-  margin-top:-20px;
+  margin-top:-30px;
+  width:85% !important;
   height : auto !important;
 }
 
