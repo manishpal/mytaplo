@@ -26,7 +26,7 @@ async function screenshotDOMElement(page, selector, padding = 0) {
   }, selector);
 
   return await page.screenshot({
-    path: 'element.png',
+    path: 'temp/element.png',
     clip: {
       x: rect.left - padding,
       y: rect.top - padding,
@@ -41,7 +41,7 @@ async function googleBot(page) {
   console.log("Using google vision");
   await page.goto('https://www.gstatic.com/cloud-site-ux/vision.min.html');
   let input = await page.$('input[type="file"]');
-  await input.uploadFile('element.png');
+  await input.uploadFile('temp/element.png');
   await page.waitFor(4000);
   let jsonDiv = await page.$('vs-json[id="json"]');
   let json = await page.evaluate(el => el.innerText, jsonDiv);
@@ -105,12 +105,12 @@ async function fetchCookie(browser, data) {
     await page.type('input[name="captchaResp"', capText);
     console.log("Got option to select as", portName, "& captext", capText);
     
-    await page.screenshot({path: 'picture.png'});
+   // await page.screenshot({path: 'temp/picture.png'});
     
     await page.click('#SubB');    
     await page.waitFor(2*1000);
 
-    await page.screenshot({path: 'resultingpage.png'});
+   // await page.screenshot({path: 'resultingpage.png'});
     let captcha =  await page.$('#capimg');
     loggedIn = (captcha === undefined || captcha === null);
     //console.log("loggedIn is ", captcha);
