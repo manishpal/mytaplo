@@ -43,3 +43,4 @@ if(app.get('dev') === 'development'){
 }
 
 require('./lib/initializers');
+module.exports = app;
