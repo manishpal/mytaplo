@@ -151,7 +151,7 @@ async function fetchShippingData(data, cookie){
                               });
 }
 
-async function fetchIECDetails(browser){
+async function fetchIECDetails(browser, iecInput){
   const page = await browser.newPage();
   await page.goto('http://dgftebrc.nic.in:8100/BRCQueryTrade/brcIssuedTrade.jsp');
   //await page.screenshot({path: 'example.png'});
@@ -159,7 +159,8 @@ async function fetchIECDetails(browser){
   let inputIEC = await page.$('input[name="iec"]');
  // console.log("inputIEC initial is", inputIEC);
   while(inputIEC){
-    await page.type('input[name="iec"]', '0388147831');
+    //await page.type('input[name="iec"]', '0388147831');
+    await page.type('input[name="iec"]',  iecInput);
     const inputValue = await page.$eval('input[name="iec"]', el => el.value);
     //console.log('input value set is', inputValue);
     //const parent = await page.$eval('body > form > div > center > table > tbody > tr:nth-child(6) > td:nth-child(3) > img', el => el.src);
@@ -203,10 +204,10 @@ async function fetchIECDetails(browser){
 }
 
 
-(async () => {
+let getIECData =  async (iec, rowData) => {
   const browser = await puppeteer.launch();
-  let brcData = await fetchIECDetails(browser);
-  let limit = 2;
+  let brcData = await fetchIECDetails(browser, iec);
+  let limit = rowData;
   brcData = brcData.slice(0, limit);
 
   let inputData = { 'SHB No': '2702736',
@@ -229,6 +230,7 @@ async function fetchIECDetails(browser){
 
   //console.log("Got data", data);
   await browser.close();
-  process.exit(0);
-})();
+};
+
+module.exports = getIECData;
 
