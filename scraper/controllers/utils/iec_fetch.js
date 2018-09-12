@@ -110,9 +110,9 @@ async function fetchCookie(browser, data) {
    // await page.screenshot({path: 'temp/picture.png'});
     
     await page.click('#SubB');    
-    await page.waitFor(2*1000);
+    await page.waitFor(5*1000);
 
-   // await page.screenshot({path: 'resultingpage.png'});
+    //await page.screenshot({path: 'resultingpage.png'});
     let captcha =  await page.$('#capimg');
     loggedIn = (captcha === undefined || captcha === null);
     //console.log("loggedIn is ", captcha);
