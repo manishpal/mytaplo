@@ -17,4 +17,5 @@ exports.developmentErrors = (err,req,res,next) => {
         status : err.status,
         stackHighlighted : err.stack.replace(/[a-z_-\d]+.js:\d+:\d+/gi, '<mark>$&</mark>')   
     };
-res.status(err.status || 500).json(errorDetails);
+    res.status(err.status || 500).json(errorDetails);
+}
