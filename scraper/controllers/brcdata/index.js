@@ -8,13 +8,22 @@ exports.index = async (req,res) => {
 	let model = await BrcModel.findOne({iecCode : iec_code});
 	console.log("got data from db", model, "with iec code", iec_code);
 	let brcData = undefined;
+	let fetchingRequired = true;
 	if(model && model.jsonData){
 		brcData = JSON.parse(model.jsonData);
-	}else{
+		if(brcData.length >= count)
+			fetchingRequired = false
+	}
+
+	if(fetchingRequired){
 		brcData = await iecData(iec_code, count);
 		console.log("got brc data", brcData);
-		let brcModelData = new BrcModel({iecCode :req.query.iec_code, jsonData : JSON.stringify(brcData)});
+		let brcModelData = model;
+		if(!brcModelData)
+			brcModelData = new BrcModel({iecCode :req.query.iec_code});
+		brcModelData.jsonData = JSON.stringify(brcData);
 		brcModelData = await brcModelData.save();
 	}
-  res.status(200).json(jsonHelper.getResponse("Success",null,{data : brcData}));
+	brcData = brcData.slice(0, count);
+  	res.status(200).json(jsonHelper.getResponse("Success",null,{data : brcData}));
 }
