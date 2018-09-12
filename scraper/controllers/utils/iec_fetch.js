@@ -208,7 +208,7 @@ async function fetchIECDetails(browser, iecInput){
 
 let getIECData =  async (iec, rowCount) => {
   let finalData = "";
-  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox'], ignoreHTTPSErrors : true});
   let brcData = await fetchIECDetails(browser, iec);
   let limit = rowCount;
   iBrcData = brcData.slice(0, limit);
