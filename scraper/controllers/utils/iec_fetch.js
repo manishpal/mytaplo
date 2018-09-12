@@ -55,7 +55,9 @@ function getPortName(options, code){
   let ports = portNames.filter(function (elem){
     return elem.indexOf(code) != -1;
   });
-  return ports[0].trim();
+  if(ports[0])
+    return ports[0].trim();
+  return undefined;
 }
 
 
@@ -204,32 +206,41 @@ async function fetchIECDetails(browser, iecInput){
 }
 
 
-let getIECData =  async (iec, rowData) => {
+let getIECData =  async (iec, rowCount) => {
+  let finalData = "";
   const browser = await puppeteer.launch();
   let brcData = await fetchIECDetails(browser, iec);
-  let limit = rowData;
-  brcData = brcData.slice(0, limit);
+  let limit = rowCount;
+  iBrcData = brcData.slice(0, limit);
 
   let inputData = { 'SHB No': '2702736',
                     'SHB Port': 'INDER6',
                     'SHB Date': '08.12.2016' }
   let [cookie, locationOptions] = await fetchCookie(browser, inputData);
-  for(var t=0;t<brcData.length;t++){
-    let portName = getPortName(locationOptions, brcData[t]['SHB Port'].trim());
-    brcData[t]['PortName'] = portName;
-    //console.log("final Brc Data", brcData)
+  console.log("locationOptions", locationOptions);
+  var cleanedBrcData = [];
+  for(var t=0;t<iBrcData.length;t++){
+    let portName = getPortName(locationOptions, iBrcData[t]['SHB Port'].trim());
+    if(portName){
+      iBrcData[t]['PortName'] = portName;
+      cleanedBrcData.push(iBrcData[t]);
+    }else{
+      console.log("Skipped one row", iBrcData);
+    }
   }
 
   console.log("Got cookie data", cookie);
   if(cookie) {
     //If we are able to authenticate successfully, lets fetch shipping data
-    let reqPromises = brcData.map(function(it) { return fetchShippingData(it, cookie); });
+    let reqPromises = cleanedBrcData.map(function(it) { return fetchShippingData(it, cookie); });
     let shippingData = await Promise.all(reqPromises);
     console.log("shippingData", shippingData);
+    finalData = shippingData;
   }
 
   //console.log("Got data", data);
   await browser.close();
+  return finalData;
 };
 
 module.exports = getIECData;
