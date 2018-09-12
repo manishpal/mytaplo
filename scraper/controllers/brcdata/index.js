@@ -11,7 +11,7 @@ exports.index = async (req,res) => {
 	if(model && model.jsonData){
 		brcData = JSON.parse(model.jsonData);
 	}else{
-		brcData = await iecData(iec_code, req.query.count);
+		brcData = await iecData(iec_code, count);
 		console.log("got brc data", brcData);
 		let brcModelData = new BrcModel({iecCode :req.query.iec_code, jsonData : JSON.stringify(brcData)});
 		brcModelData = await brcModelData.save();
