@@ -1110,6 +1110,9 @@ header a.cart i {
 	color: #fff;
 	font-family: 'proxima_nova_rgbold'
 }
+p.point {
+  margin-top:10px !important;
+}
 
 .v2 .homeContent {
 	color: #233141
