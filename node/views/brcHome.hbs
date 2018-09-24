@@ -53,13 +53,21 @@
 						       		   "</li>");
 				for(var u=0;u<data.length;u++){
         			var row = data[u];
+        			var billId = row['Bill ID'];
+        			var cha = row['CHA No.'];
+        			if(billId.length > 8){
+        				row['Bill Id'] = billId.splice(7, 0, " - ");
+        			}
+        			if(cha.length > 9){
+        				row['CHA No.'] = cha.splice(8, 0, " - ");
+        			}
         			$('.cartTable').append("<li class=\"singleIteam clearfix category-host\"> \
         					<div class=\"col-sm-1 brcli\">" + row['BRC Date'] + "</div> \
-				            <div class=\"col-sm-1 brcli\">" + row['Bill ID'].splice(7, 0, " - ") + "</div> \
+				            <div class=\"col-sm-1 brcli\">" + row['Bill ID'] + "</div> \
 				            <div class=\"col-sm-1 brcli\">" + row['SHB No'] + "</div> \
 				            <div class=\"col-sm-1 brcli\">" + row['BRC Utilisation Status'] + "</div> \
 				            <div class=\"col-sm-1 brcli\">" + row['PortName'] + "</div> \
-				            <div class=\"col-sm-1 brcli\">" + row['CHA No.'].splice(8, 0, " - ") + "</div> \
+				            <div class=\"col-sm-1 brcli\">" + row['CHA No.'] + "</div> \
 				            <div class=\"col-sm-1 brcli\">" + row['Job No.'] + "</div> \
 				            <div class=\"col-sm-1 brcli\">" + row['Job Date'] + "</div> \
 				            <div class=\"col-sm-1 brcli\">" + row['Port of Discharge'] + "</div> \
