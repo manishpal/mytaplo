@@ -32,7 +32,7 @@
 			var iecVal = $('#iec_code').val();
 			$('#loader').show();
 			$('.cartTable').html('');
-			$.get("/seawise/getdata?iec_code="+iecVal+"&count=20", function(response){
+			$.get("/seawise/getdata?iec_code="+iecVal+"&count=200", function(response){
 				console.log("Got data", response);
 				$('#data-table').show();
 				data = response.results.data;
