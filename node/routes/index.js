@@ -7,12 +7,14 @@ const home = require('../controllers/home/index');
 const transaction = require('./transaction/index')
 const passport = require('passport');
 const kite = require('../controllers/utils/kite');
+const brc = require('./brc/index');
 
 require('../passport')();
 
 //router.use('/api/v1',apiV1),
 router.use('/dashboard', dashboard);
 router.use('/transactions', transaction);
+router.use('/brc', brc)
 
 router.get('/login', function(req, res){
 	if(req.user){

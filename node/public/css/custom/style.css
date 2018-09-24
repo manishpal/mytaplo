@@ -327,6 +327,14 @@ img {
 	text-align: center;
 }
 
+.brcForm {
+	margin-top:20px;
+}
+
+.brcli {
+	line-height: 20px !important;
+}
+
 @-webkit-keyframes sk-cubeGridScaleDelay {
 	0%,
 	70%,
