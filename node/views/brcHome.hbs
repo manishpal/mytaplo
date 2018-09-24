@@ -55,10 +55,10 @@
         			var row = data[u];
         			var billId = row['Bill ID'];
         			var cha = row['CHA No.'];
-        			if(billId.length > 8){
+        			if(billId && billId.length > 8){
         				row['Bill Id'] = billId.splice(7, 0, " - ");
         			}
-        			if(cha.length > 9){
+        			if(cha && cha.length > 9){
         				row['CHA No.'] = cha.splice(8, 0, " - ");
         			}
         			$('.cartTable').append("<li class=\"singleIteam clearfix category-host\"> \
