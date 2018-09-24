@@ -48,7 +48,7 @@
 				console.log("Got data", response);
 				$('#data-table').show();
 				/*response = "{\"status\":\"Success\",\"message\":\"\",\"results\":{\"data\":[{\"BRC Date\":\"04.08.2018\",\"BRC Status\":\"Active\",\"Bill ID\":\"061900012410118\",\"SHB No\":\"6503093\",\"SHB Port\":\"INDER6\",\"SHB Date\":\"17.03.2016\",\"BRC Utilisation Status\":\"Available\",\"PortName\":\"DADRI ICD (INDER6)\",\"IEC\":\"0502038543\u00A0\",\"CHA No.\":\"AAOCS5607GCH001\u00A0\",\"Job No.\":\"4232519\u00A0\",\"Job Date\":\"17 MAR 2016 12:03\u00A0\",\"Port of Discharge\":\"VNHPH\u00A0\",\"Total Package\":\"725\u00A0\",\"Gross Weight\":\"29145\u00A0\",\"FOB(INR)\":\"5263006.45\u00A0\",\"Total Cess\":\"0\u00A0\",\"Drawback\":\"52631\u00A0\",\"STR\":\"0\u00A0\",\"Total (DBK+STR)\":\"52631\u00A0\",\"Reward Flag\":\"Click here to view item wise reward details\u00A0\"}]}}";*/
-				data = JSON.parse(response).results.data;
+				data = resonse.results.data;
 				console.log("here is the data", data);
 				for(var u=0;u<data.length;u++){
         			var row = data[u];
