@@ -37,20 +37,20 @@
 				$('#data-table').show();
 				data = response.results.data;
 				console.log("here is the data", data);
-				$('.cartTable').append("<li class=\"cartHead clearfix\"> \
-            								<div class=\"col-sm-1\">BRC Date</div> \
-								            <div class=\"col-sm-1\">Bill Id</div> \
-								            <div class=\"col-sm-1\">SHB No</div> \
-								            <div class=\"col-sm-1\">BRC Utilisation</div> \
-								            <div class=\"col-sm-1\">Port name</div> \
-								            <div class=\"col-sm-1\">CHA No</div> \
-								            <div class=\"col-sm-1\">Job No</div> \
-								            <div class=\"col-sm-1\">Job Date</div> \
-								            <div class=\"col-sm-1\">Port of discharge</div> \
-								            <div class=\"col-sm-1\">Total package</div> \
-								            <div class=\"col-sm-1\">Gross Weight</div> \
-								            <div class=\"col-sm-1\">FOB(INR)</div> \                           
-						       			 </li>");
+				$('.cartTable').append("<li class=\"cartHead clearfix\">"+
+            						   "<div class=\"col-sm-1\">BRC Date</div>" +
+								       "<div class=\"col-sm-1\">Bill Id</div>" +
+								       "<div class=\"col-sm-1\">SHB No</div>" +
+								       "<div class=\"col-sm-1\">BRC Utilisation</div>" +
+								       "<div class=\"col-sm-1\">Port name</div>" +
+								       "<div class=\"col-sm-1\">CHA No</div>" +
+								       "<div class=\"col-sm-1\">Job No</div>" +
+								       "<div class=\"col-sm-1\">Job Date</div>" +
+								       "<div class=\"col-sm-1\">Port of discharge</div>" +
+								       "<div class=\"col-sm-1\">Total package</div>" +
+								       "<div class=\"col-sm-1\">Gross Weight</div>" +
+								       "<div class=\"col-sm-1\">FOB(INR)</div>" +
+						       		   "</li>");
 				for(var u=0;u<data.length;u++){
         			var row = data[u];
         			$('.cartTable').append("<li class=\"singleIteam clearfix category-host\"> \
