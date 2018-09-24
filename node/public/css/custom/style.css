@@ -335,6 +335,11 @@ img {
 	line-height: 20px !important;
 }
 
+img.loader {
+	margin:0px auto;
+	display: block;
+}
+
 @-webkit-keyframes sk-cubeGridScaleDelay {
 	0%,
 	70%,
