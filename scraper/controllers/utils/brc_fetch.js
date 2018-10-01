@@ -2,53 +2,11 @@ const puppeteer = require('puppeteer');
 const axios = require('axios');
 const https = require('https');
 const cheerio = require('cheerio')
+const captcha = require('./crack_captcha');
 
 //var Tesseract = require('tesseract.js')
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-let ocr = function(data) {
-  return Tesseract.recognize(data, {langPath :  './'})
-  .progress(function  (p) { console.log('progress', p)  })
-  .catch(err => {
-    console.error(err);
-  })
-  .then(function (result) {
-    console.log(result.text);
-  })
-  //.finally(resultOrError => console.log(resultOrError));  
-};
-
-async function screenshotDOMElement(page, selector, padding = 0) {
-  const rect = await page.evaluate(selector => {
-    const element = document.querySelector(selector);
-    const {x, y, width, height} = element.getBoundingClientRect();
-    return {left: x, top: y, width, height, id: element.id};
-  }, selector);
-
-  return await page.screenshot({
-    path: 'temp/element.png',
-    clip: {
-      x: rect.left - padding,
-      y: rect.top - padding,
-      width: rect.width + padding * 2,
-      height: rect.height + padding * 2
-    }
-  });
-}
-
-
-async function googleBot(page) {
-  console.log("Using google vision");
-  await page.goto('https://www.gstatic.com/cloud-site-ux/vision.min.html');
-  let input = await page.$('input[type="file"]');
-  await input.uploadFile('temp/element.png');
-  await page.waitFor(4000);
-  let jsonDiv = await page.$('vs-json[id="json"]');
-  let json = await page.evaluate(el => el.innerText, jsonDiv);
-  let data = JSON.parse(json);
-  console.log("json", data.textAnnotations[1].description);
-  return data.textAnnotations[1].description;
-}
 
 function getPortName(options, code){
   let portNames = options.split("\n");
@@ -79,8 +37,7 @@ async function fetchCookie(browser, data) {
   let count = 0;
   while(!loggedIn && count < 20){
     //console.log("Trying logging in", capText);
-    await screenshotDOMElement(page, '#capimg', 2);
-    let capText = await googleBot(await browser.newPage());
+    let capText = await captcha(page, browser, '#capimg');
 
     await page.type('input[name="SB_NO"]', shippingBill);
     let optionsElem = await page.evaluate((date) => {
@@ -167,9 +124,8 @@ async function fetchIECDetails(browser, iecInput){
     //console.log('input value set is', inputValue);
     //const parent = await page.$eval('body > form > div > center > table > tbody > tr:nth-child(6) > td:nth-child(3) > img', el => el.src);
     //console.log('captch src  is', parent);
-    await screenshotDOMElement(page, 'body > form > div > center > table > tbody > tr:nth-child(6) > td:nth-child(3) > img', 2);
-    let captext = await googleBot(await browser.newPage());
-
+    let captext = await captcha(page, browser, 'body > form > div > center > table > tbody > tr:nth-child(6) > td:nth-child(3) > img');
+    
     //let result = await ocr(Buffer.from(parent.replace("data:image/jpg;base64,", ""), 'base64'));
     //let captext = result.text.replace("\n\n", "");
     await page.type('input[name="captext"]', captext);
